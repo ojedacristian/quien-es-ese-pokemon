@@ -10,3 +10,6 @@ main {
 img {
   image-rendering: pixelated;
 }
+.ocultar {
+  filter: brightness(0);
+}
