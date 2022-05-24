@@ -13,12 +13,12 @@ interface counter {
 }
 
 
-const App = ()=> {
+const App = () => {
 
   const [pokemon, setPokemon] = useState<pokemon>({} as pokemon)
   const [showName, setShowName] = useState(false)
   const [value, setValue] = useState('')
-  const [message, setMessage] = useState<string>('')
+  const [success, setSuccess] = useState<boolean | null>(null)
   const [counter, setCounter] = useState<counter>(JSON.parse(localStorage.getItem('counter') || '{ "aciertos": 0, "errores": 0  }'))
 
   useEffect(() => {
@@ -39,22 +39,37 @@ const App = ()=> {
     event.preventDefault()
     setShowName(true)
     if (value.trim().toLowerCase() === pokemon.name) {
-      setMessage('Has acertado')
+      setSuccess(true)
       setCounter(prev => ({ ...prev, aciertos: prev.aciertos + 1 }))
     } else {
-      setMessage('Oh no, te has equivocado')
+      setSuccess(false)
       setCounter(prev => ({ ...prev, errores: prev.errores + 1 }))
-    }}
-
-    const newGame = () => {
-      setValue('');
-      setMessage('');
-      setShowName(false);
-      api.random().then(setPokemon)
     }
+  }
 
-    return <main>
-      <div>
+  const newGame = () => {
+    setValue('');
+    setSuccess(null);
+    setShowName(false);
+    api.random().then(setPokemon)
+  }
+
+  return <main
+    style={{
+      minHeight:'100vh'
+    }}
+  >
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems:'flex-start',
+        width: '50%'
+      }}
+    >
+
+      <div
+      >
         <b>Aciertos: </b>
         <span>{counter.aciertos}</span>
       </div>
@@ -62,42 +77,69 @@ const App = ()=> {
         <b>Errores: </b>
         <span>{counter.errores}</span>
       </div>
-      <h1>Quien es ese pokemon?</h1>
+    </div>
+    <h1>Quien es ese pokemon?</h1>
 
-      <img
-        width='500px'
-        height='500px'
-        src={pokemon?.image}
-        alt={pokemon?.name}
-        className={showName ? '' : 'ocultar'}
-      />
+    <img
+      width='500px'
+      height='500px'
+      src={pokemon?.image}
+      alt={pokemon?.name}
+      className={showName ? '' : 'ocultar'}
+    />
 
-      <div>{message}</div>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={value}
-          onChange={handleChange}
-          style={{ margin: '10px' }} />
-        <button> Adivinar</button>
-      </form>
-
-
+    <div> 
       {
-        showName
-        &&
-        <div>{pokemon.name}</div>
+        success && 
+        <div style={{
+          backgroundColor:'#ddff99',
+          padding: '1em'
+        }}>'Genial, has acertado'</div>
       }
-
       {
-        message
-        &&
-        <button
-          onClick={newGame}
-        >Jugar otra vez 🔁 </button>
+        success !== null && !success &&
+        <div style={{
+          backgroundColor:'#ff6600',
+          padding: '1em'
+        }}>
+          'Oh, has fallado'
+        </div>
       }
+      </div>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={value}
+        onChange={handleChange}
+        style={{ margin: '10px' }} />
+      <button> Adivinar</button>
+    </form>
 
-    </main>
-  }
 
-  export default App
+    {
+      showName
+      &&
+      <div
+        style={{
+          backgroundColor:'#ffae12',
+          padding: '1em'
+        }}
+      >{pokemon.name}</div>
+    }
+
+    {
+      success !== null
+      &&
+      <button
+        style={{
+          margin: '1em',
+          padding: '1em'
+        }}
+        onClick={newGame}
+      >Jugar otra vez 🔁 </button>
+    }
+
+  </main>
+}
+
+export default App
