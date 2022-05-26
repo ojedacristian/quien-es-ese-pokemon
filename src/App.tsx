@@ -30,21 +30,26 @@ const App = () => {
     localStorage.setItem('counter', JSON.stringify(counter))
   }, [counter])
 
+  useEffect(() => {
+    if (value.trim().toLowerCase() === pokemon.name) {
+      setShowName(true)
+      setSuccess(true)
+      setCounter(prev => ({ ...prev, aciertos: prev.aciertos + 1 }))
+    }
+  }, [value])
+  
 
   const handleChange = (event: React.FormEvent) => {
-    setValue(event.target.value)
+    setValue(event.target.value);
+    
   }
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
     setShowName(true)
-    if (value.trim().toLowerCase() === pokemon.name) {
-      setSuccess(true)
-      setCounter(prev => ({ ...prev, aciertos: prev.aciertos + 1 }))
-    } else {
-      setSuccess(false)
-      setCounter(prev => ({ ...prev, errores: prev.errores + 1 }))
-    }
+    setSuccess(false)
+    setCounter(prev => ({ ...prev, errores: prev.errores + 1 }))
+    
   }
 
   const newGame = () => {
@@ -112,7 +117,7 @@ const App = () => {
         value={value}
         onChange={handleChange}
         style={{ margin: '10px' }} />
-      <button> Adivinar</button>
+      <button>Me rindo</button>
     </form>
 
 
